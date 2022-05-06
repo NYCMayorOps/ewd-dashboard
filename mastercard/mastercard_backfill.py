@@ -13,7 +13,8 @@ def main():
     print("reading historic data")
     mastercard_raw = pd.read_csv('historic_daily.csv')
     #pre-baked. Uncomment to re-run
-    #mastercard_raw = concat_all_files(ROOT)
+    mastercard_raw = concat_all_files(ROOT)
+    mastercard_raw.to_csv('historic_daily.csv')
     print("transforming old data")
     mastercard_old = pd.read_csv('mastercard_2019-01-01_to_2021-02-28.csv')
     df_new = mastercard_transform_citywide_daily(mastercard_raw)
@@ -24,7 +25,7 @@ def main():
     df = join_old_new_zip(df_old, df_new)
     my_path = ROOT / 'output' / 'mastercard' / 'mastercard_all_dates_citywide.csv'
     print(f"writing to {my_path}")
-    df.to_csv(my_path)
+    df.to_csv(my_path, index=False)
 
 
 def concat_all_files(root):
@@ -37,7 +38,7 @@ def concat_all_files(root):
     df = pd.concat(file_frames)
     print(df.info())
     #raise Exception('stop-here')
-    df.to_csv('historic_daily.csv')
+    df.to_csv('historic_daily.csv', index=False)
     return df
 
 def mastercard_transform_citywide_daily(df):
