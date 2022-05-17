@@ -19,11 +19,11 @@ username =os.getenv('CARTO_USERNAME')
 zip_codes_path = os.getenv('ZIP_CODES_PATH')
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-
+ROOT=os.getenv('MAYOR_DASHBOARD_ROOT')
 def main():
     mastercard_raw = pd.read_csv('mastercard_latest.csv')
     #df = download_mastercard_latest()
-    mastercard_old = pd.read_csv('mastercard_2019-01-01_to_2021-02-28.csv')
+    mastercard_old = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / 'mastercard_2019-01-01_to_2021-04-25.csv')
     print('transforming new dates')
     df = mastercard_transform(mastercard_raw)
     #the date range is the same for all values. Take the first.

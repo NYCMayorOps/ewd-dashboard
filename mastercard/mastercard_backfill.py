@@ -11,21 +11,24 @@ ROOT = Path(os.getenv('MAYOR_DASHBOARD_ROOT'))
 
 def main():
     print("reading historic data")
-    mastercard_raw = pd.read_csv('historic_daily.csv')
+    #mastercard_raw = pd.read_csv('historic_daily.csv')
     #pre-baked. Uncomment to re-run
     mastercard_raw = concat_all_files(ROOT)
-    mastercard_raw.to_csv('historic_daily.csv')
+    mastercard_raw.to_csv('historic_daily.csv', index=False)
     print("transforming old data")
-    mastercard_old = pd.read_csv('mastercard_2019-01-01_to_2021-02-28.csv')
+    mastercard_old = pd.read_csv(Path(os.getcwd()) / 'historic' / 'mastercard_2019-01-01_to_2021-04-25.csv')
     df_new = mastercard_transform_citywide_daily(mastercard_raw)
     mastercard_raw = None
     df_old = mastercard_transform_citywide_daily(mastercard_old)
-    mastercard_old = None
-    print("joining")
+    #mastercard_old = None
+    print("joining old to new")
     df = join_old_new_zip(df_old, df_new)
     my_path = ROOT / 'output' / 'mastercard' / 'mastercard_all_dates_citywide.csv'
     print(f"writing to {my_path}")
     df.to_csv(my_path, index=False)
+    #print(df.info())
+    
+
 
 
 def concat_all_files(root):
@@ -36,7 +39,7 @@ def concat_all_files(root):
     file_frames = [pd.read_csv(x) for x in file_paths]
     print("concatenating csvs into one large file")
     df = pd.concat(file_frames)
-    print(df.info())
+    #print(df.info())
     #raise Exception('stop-here')
     df.to_csv('historic_daily.csv', index=False)
     return df
