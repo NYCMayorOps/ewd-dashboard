@@ -1,19 +1,30 @@
-import os
+import os, sys
 import pandas as pd
 from pathlib import Path
 import mastercard_upload as mcu
 from dotenv import load_dotenv
 import numpy as np
 
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-load_dotenv(dotenv_path=dotenv_path)
-ROOT = Path(os.getenv('MAYOR_DASHBOARD_ROOT'))
+from iswindows import IsWindows
+
+if IsWindows().is_windows:
+    dotenv_path = Path( f'c:\\Users\{os.getlogin()}\\secrets\\.env')
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    load_dotenv()
+ROOT = os.getenv('MAYOR_DASHBOARD_ROOT')
+OUTPUT_DIR = Path(os.getenv('OUTPUT_DIR'))
+sys.path.insert(0, ROOT + '/utils')
+from sharepoint import Sharepoint
+#from iswindows import IsWindows
+
+
 
 def main():
     print("reading historic data")
     #mastercard_raw = pd.read_csv('historic_daily.csv')
     #pre-baked. Uncomment to re-run
-    mastercard_raw = concat_all_files(ROOT)
+    mastercard_raw = concat_all_files(Path(ROOT))
     mastercard_raw.to_csv('historic_daily.csv', index=False)
     print("transforming old data")
     mastercard_old = pd.read_csv(Path(os.getcwd()) / 'historic' / 'mastercard_2019-01-01_to_2021-04-25.csv')
@@ -23,11 +34,16 @@ def main():
     #mastercard_old = None
     print("joining old to new")
     df = join_old_new_zip(df_old, df_new)
-    my_path = ROOT / 'output' / 'mastercard' / 'mastercard_all_dates_citywide.csv'
+    my_path = OUTPUT_DIR / 'mastercard_all_dates_citywide.csv'
     print(f"writing to {my_path}")
     df.to_csv(my_path, index=False)
     #print(df.info())
+    sp = Sharepoint()
+    sp.upload_file( my_path, 'Mastercard', 'mastercard_all_dates_citywide.csv', sp.ops)
+
+
     
+
 
 
 
@@ -81,3 +97,4 @@ def join_old_new_zip(old_df, new_df):
     return df
 
 #main is called externally by mastercard_main.py
+#upload_file(self, local_path, rel_path, filename, ctx):

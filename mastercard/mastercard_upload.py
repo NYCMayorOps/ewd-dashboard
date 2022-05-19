@@ -1,4 +1,4 @@
-import os
+import os, sys
 from dotenv import load_dotenv
 from pathlib import Path
 import pandas as pd
@@ -14,12 +14,18 @@ import geopandas as gpd
 dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
 load_dotenv(dotenv_path=dotenv_path)
 
+
+
 api_key = os.getenv('CARTO_KEY')
 username =os.getenv('CARTO_USERNAME')
 zip_codes_path = os.getenv('ZIP_CODES_PATH')
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 ROOT=os.getenv('MAYOR_DASHBOARD_ROOT')
+sys.path.insert(0, ROOT + '/utils')
+
+from sharepoint import Sharepoint
+
 def main():
     mastercard_raw = pd.read_csv('mastercard_latest.csv')
     #df = download_mastercard_latest()
@@ -131,8 +137,6 @@ def join_to_zipcodes(df, zipcodes):
     gdf_joined = zipcodes.merge(df, on='ZIPCODE', how='outer')
     return gdf_joined
 
-def download_mastercard_latest():
-    return None
 
 #main is called by mastercard_main.py    
 '''
