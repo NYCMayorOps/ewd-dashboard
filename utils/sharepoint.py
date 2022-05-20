@@ -7,9 +7,13 @@ from io import StringIO, BytesIO
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
+from iswindows import IsWindows
 
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-load_dotenv(dotenv_path=dotenv_path)
+if IsWindows().is_windows:
+    dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    load_dotenv()
 class Sharepoint:
  
     def __init__(self):
@@ -78,6 +82,7 @@ class Sharepoint:
                 print("CSV is valid")
         # Upload file to target path
         target_folder = ctx.web.get_folder_by_server_relative_url(rel_path)
+        print(f"target_folder = {target_folder}")
         target_file = target_folder.upload_file(filename, file_content)
         ctx.execute_query()
         print(f'Copied {local_path} to {rel_path}')
@@ -116,6 +121,7 @@ class Sharepoint:
         ctx.load(web)
         ctx.execute_query()
         print("Web title: {0}".format(web.properties['Title']))
+        return True
 
     '''
         target_folder=sys.argv[1]
@@ -124,3 +130,10 @@ class Sharepoint:
             target_path=f'{target_folder}/{file_name}'
             copy_file(local_path, target_path)
     '''
+    
+if __name__ == '__main__':
+    sp = Sharepoint()
+    ctx = sp.ops
+    my_path = Path(os.getenv('OUTPUT_DIR')) / 'mastercard_all_dates_citywide.csv'
+    sp = Sharepoint()
+    sp.upload_file( my_path, 'Mastercard', 'mastercard_all_dates_citywide.csv', ctx)
