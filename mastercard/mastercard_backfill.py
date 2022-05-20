@@ -39,8 +39,9 @@ def main():
     df.to_csv(my_path, index=False)
     #print(df.info())
     sp = Sharepoint()
+    '''
     sp.upload_file( my_path, 'Mastercard', 'mastercard_all_dates_citywide.csv', sp.ops)
-
+    '''
 
     
 
