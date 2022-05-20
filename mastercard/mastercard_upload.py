@@ -29,8 +29,10 @@ sys.path.insert(0, ROOT + '/utils')
 from sharepoint import Sharepoint
 
 def main():
-    mastercard_raw = pd.read_csv('mastercard_latest.csv')
-    #df = download_mastercard_latest()
+    mastercard_historic = os.list_dir('./historic')
+    mastercard_historic = sorted(mastercard_historic, reverse=True)[0]
+
+    df = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / mastercard_historic)
     mastercard_old = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / 'mastercard_2019-01-01_to_2021-04-25.csv')
     print('transforming new dates')
     df = mastercard_transform(mastercard_raw)
