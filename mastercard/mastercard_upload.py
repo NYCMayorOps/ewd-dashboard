@@ -10,11 +10,14 @@ from carto.auth import APIKeyAuthClient
 from cartoframes import to_carto
 from cartoframes.auth import set_default_credentials
 import geopandas as gpd
+from iswindows import IsWindows
 
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-load_dotenv(dotenv_path=dotenv_path)
-
-
+if IsWindows().is_windows:
+    dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    load_dotenv()
+    ###this should commit
 
 api_key = os.getenv('CARTO_KEY')
 username =os.getenv('CARTO_USERNAME')
@@ -23,7 +26,6 @@ AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 ROOT=os.getenv('MAYOR_DASHBOARD_ROOT')
 sys.path.insert(0, ROOT + '/utils')
-
 from sharepoint import Sharepoint
 
 def main():
