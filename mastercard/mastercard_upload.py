@@ -29,13 +29,15 @@ sys.path.insert(0, ROOT + '/utils')
 from sharepoint import Sharepoint
 
 def main():
-    mastercard_historic = os.list_dir('./historic')
-    mastercard_historic = sorted(mastercard_historic, reverse=True)[0]
+    mastercard_historic = os.listdir('./historic')
+    mastercard_latest = sorted(mastercard_historic, reverse=True)[0]
 
-    df = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / mastercard_historic)
+    print(mastercard_latest)
+    df = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / f"{mastercard_latest}")
+    print(df.info())
     mastercard_old = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / 'mastercard_2019-01-01_to_2021-04-25.csv')
     print('transforming new dates')
-    df = mastercard_transform(mastercard_raw)
+    df = mastercard_transform(df)
     #the date range is the same for all values. Take the first.
     min_date = df.date_range.apply(lambda x: x.split(' ')[0])[0]
     max_date = df.date_range.apply(lambda x: x.split(' ')[2])[0]
