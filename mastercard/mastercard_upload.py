@@ -34,7 +34,7 @@ def main():
 
     print(mastercard_latest)
     df = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / f"{mastercard_latest}")
-    print(df.info())
+    #print(df.info())
     mastercard_old = pd.read_csv(Path(ROOT) / 'mastercard' / 'historic' / 'mastercard_2019-01-01_to_2021-04-25.csv')
     print('transforming new dates')
     df = mastercard_transform(df)

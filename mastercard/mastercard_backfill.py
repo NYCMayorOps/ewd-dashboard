@@ -22,7 +22,9 @@ from sharepoint import Sharepoint
 
 def main():
     print("reading historic data")
+    
     #mastercard_raw = pd.read_csv('historic_daily.csv')
+    
     #pre-baked. Uncomment to re-run
     mastercard_raw = concat_all_files(Path(ROOT))
     mastercard_raw.to_csv('historic_daily.csv', index=False)
@@ -38,11 +40,12 @@ def main():
     print(f"writing to {my_path}")
     df.to_csv(my_path, index=False)
     #print(df.info())
-    sp = Sharepoint()
     '''
-    sp.upload_file( my_path, 'Mastercard', 'mastercard_all_dates_citywide.csv', sp.ops)
+    #df = pd.read_csv('df_agg.csv')
+    #my_path = OUTPUT_DIR / 'mastercard_all_dates_citywide.csv'
+    #sp = Sharepoint()
+    #sp.upload_file( my_path, 'Mastercard', 'test_file.csv', sp.ops)
     '''
-
     
 
 

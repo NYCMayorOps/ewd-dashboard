@@ -2,8 +2,13 @@ import os
 import boto3
 from dotenv import load_dotenv
 from pathlib import Path
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-load_dotenv(dotenv_path=dotenv_path)
+from iswindows import IsWindows
+
+if IsWindows().is_windows:
+    dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+    load_dotenv(dotenv_path=dotenv_path)
+else:
+    load_dotenv()
 
 
 class Pull:
