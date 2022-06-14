@@ -75,7 +75,7 @@ def authenticate_carto(api_key, username):
 
 def mastercard_transform(df):
     df['date_range'] = f"{df.txn_date.min()} to {df.txn_date.max()}"
-    df['zip_code'] = df['zip_code'].astype(str)
+    df['zip_code'] = df['Zip_code'].astype(str)
     df = df.loc[df['segment'] == 'Overall'] 
     df = df.loc[df['industry'] == 'Total Retail']
     df = df.loc[df['geo_type'] == 'Msa']
