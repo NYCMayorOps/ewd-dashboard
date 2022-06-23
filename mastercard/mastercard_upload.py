@@ -13,7 +13,7 @@ import geopandas as gpd
 from iswindows import IsWindows
 
 if IsWindows().is_windows:
-    dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+    dotenv_path = Path( f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
     load_dotenv(dotenv_path=dotenv_path)
 else:
     load_dotenv()

@@ -15,7 +15,7 @@ else:
 ROOT = os.getenv('MAYOR_DASHBOARD_ROOT')
 OUTPUT_DIR = Path(os.getenv('OUTPUT_DIR'))
 sys.path.insert(0, ROOT + '/utils')
-from sharepoint import Sharepoint
+#from sharepoint import Sharepoint
 #from iswindows import IsWindows
 
 
