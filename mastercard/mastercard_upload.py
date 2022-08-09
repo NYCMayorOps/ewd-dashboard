@@ -3,10 +3,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import pandas as pd
 import numpy as np
-import carto
-from carto.sql import SQLClient
 from carto.exceptions import CartoException
-from carto.auth import APIKeyAuthClient
 from cartoframes import to_carto
 from cartoframes.auth import set_default_credentials
 import geopandas as gpd

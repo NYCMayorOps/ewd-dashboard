@@ -33,7 +33,7 @@ function Retry-Command {
         throw 'Execution failed.'
     }
 }
-conda activate cartoframes3_3.9
+conda activate cartoframes_10
 Retry-Command -ScriptBlock {
 
 cd '//chgoldfs/operations/dev_team/MayorDashboard/repo/mastercard/'
