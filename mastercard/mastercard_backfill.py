@@ -36,7 +36,7 @@ def main():
     #mastercard_old = None
     print("joining old to new")
     df = join_old_new_zip(df_old, df_new)
-    my_path = OUTPUT_DIR / 'mastercard_all_dates_citywide.csv'
+    my_path = OUTPUT_DIR / 'mastercard' / 'mastercard_all_dates_citywide.csv'
     print(f"writing to {my_path}")
     df.to_csv(my_path, index=False)
     #print(df.info())
