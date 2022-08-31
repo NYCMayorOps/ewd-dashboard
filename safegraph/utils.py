@@ -54,4 +54,30 @@ class Utils:
         #print(f"len nattern_filtered: {len(nattern_filtered)}")
         return nattern_filtered
     
+    def filter_poi_to_region(self, poi : pd.DataFrame, filter_file : pd.DataFrame) -> pd.DataFrame:
+        '''
+        filters  poi to the geography specified in filter file.
+        params:
+            - poi - a poi file from SafeGraph rdp bucket
+            - filter_file - a list of counties to include. May be MSA or city.
+
+        returns:
+            poi DataFrame filtered to region
+        '''
+        fips = filter_file
+        #filters the HPS to the region
+        poi['county'] = poi['poi_cbg'].astype(str).apply(lambda x: x[:5])
+        #make a vector of in or out
+        filter_ : List[bool] = []
+        fips_list = fips['poi_cbg'].to_list()
+        for county in poi['county']:
+            #print(f"{len(county)},  {len(fips['poi_cbg'][0])}")
+            if county in fips_list:
+                filter_.append(True)
+            else:
+                filter_.append(False)
+        poi_filtered = poi[filter_]
+        poi_filtered = poi_filtered.reset_index()
+        #print(f"len nattern_filtered: {len(nattern_filtered)}")
+        return poi_filtered
 

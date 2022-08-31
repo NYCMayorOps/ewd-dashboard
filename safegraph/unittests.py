@@ -4,6 +4,8 @@ from pathlib import Path
 from distance_from_home import DistanceFromHome
 from bid_visitation import BidVisitation
 from stops_per_pop import StopsPerPop
+from utils import Utils
+from business_open_close import BusinessOpenClose
 
 
 ROOT = Path('\\\\CHGOLDFS\\operations\\DEV_Team\\MayorDashboard\\repo')
@@ -12,7 +14,7 @@ ROOT = Path('\\\\CHGOLDFS\\operations\\DEV_Team\\MayorDashboard\\repo')
 class TestClass(unittest.TestCase):
 
     ##### distance from home #####
-    '''
+    
     def test_get_date_from_nattern_name(self):
         dfh = DistanceFromHome()
         answer = dfh.get_date_from_nattern_name('nattern_normalized_2022-06.csv')
@@ -21,9 +23,9 @@ class TestClass(unittest.TestCase):
         dfh = DistanceFromHome()
         assert dfh.pre_covid_date('2022-03') == '2019-03'
         assert dfh.pre_covid_date('2022-02') == '2020-02'
-    '''
+    
     ##### BID Visitation #####
-    '''
+    
     def test_bid_extract_visit_df(self):
         bv = BidVisitation()
         bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
@@ -46,17 +48,104 @@ class TestClass(unittest.TestCase):
         bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
         filename='nattern_normalized_2022-06.csv'
         df = bv.process_month(filename, bid_dataframe)
-        print(df.head(10))
+
     
+    '''
     def test_bid_visitation_main(self):
         bv = BidVisitation()
         bv.main()
     '''
     ##### Stops Per Pop #####
-
+    '''
     def test_spp_main(self):
         spp = StopsPerPop()
         spp.main()
+    '''
+
+    ##### utils #####
+    def test_filter_poi_to_region(self):
+        utils_ = Utils()
+        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'core_poi_weekly_patterns' / 'weekly_pattern_2018-12-31.csv', sep='|', dtype={'poi_cbg' : str})
+        # filter Core POI to NYC
+        filter_file_path : Path = ROOT / 'safegraph' / 'csvs' / 'filter_files' / 'nyc_counties.csv'
+        filter_file : pd.DataFrame = pd.read_csv(filter_file_path, dtype={'poi_cbg': str})
+        answer = utils_.filter_poi_to_region(latest_df, filter_file)
+        assert len(answer) > 1
+        assert len(set(answer['county'])) == 5
+
+
+    def test_filter_nattern_to_region(self):
+        utils = Utils()
+        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'nattern_normalized_2018-01.csv', sep='|', dtype={'area' : str})
+        # filter Core POI to NYC
+        filter_file_path : Path = ROOT / 'safegraph' / 'csvs' / 'filter_files' / 'nyc_counties.csv'
+        filter_file : pd.DataFrame = pd.read_csv(filter_file_path, dtype={'poi_cbg': str})
+        answer = utils.filter_nattern_to_region(latest_df, filter_file)
+        assert len(answer) > 1
+        assert len(set(answer['county'])) == 5
+
+    ##### business opened and closed #####
+    def test_business_make_dict(self):
+        bc = BusinessOpenClose()
+        df = pd.DataFrame({'placekey':['aa','bb','cc'], 'j':['a','b', 'c'], 'k':['1', '2', '3'] })
+        answer = bc.make_dict(df, 'j' )
+        print(answer)
+        assert isinstance(answer, dict)
+        assert len(answer) == 3
+        assert answer['aa'] == 'a'
+    
+    def test_find_counts(self):
+        bc = BusinessOpenClose()
+        df = pd.DataFrame({'placekey': ['a','b','c'], 'opened_on':['2018-02', '2018-03', '2018-04'], 'closed_on':['2019-01', '2019-02', '9999-01']})
+        answer = bc.find_counts(df)
+        head = answer.loc[answer['month'] == '2018-01'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 0
+            assert row['closed'] == 0
+            assert row['existing'] == 0
+
+        head = answer.loc[answer['month'] == '2018-02'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 1
+            assert row['closed'] == 0
+            assert row['existing'] == 1
+
+        head = answer.loc[answer['month'] == '2018-03'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 1
+            assert row['closed'] == 0
+            assert row['existing'] == 2
+
+        head = answer.loc[answer['month'] == '2018-04'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 1
+            assert row['closed'] == 0
+            assert row['existing'] == 3
+
+        head = answer.loc[answer['month'] == '2018-05'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 0
+            assert row['closed'] == 0
+            assert row['existing'] == 3
+
+        head = answer.loc[answer['month'] == '2019-01'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 0
+            assert row['closed'] == 1
+            assert row['existing'] == 2
+
+        head = answer.loc[answer['month'] == '2019-02'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 0
+            assert row['closed'] == 1
+            assert row['existing'] == 1
+
+        head = answer.loc[answer['month'] == '2019-03'].head(1)
+        for index, row, in head.iterrows():
+            assert row['opened'] == 0
+            assert row['closed'] == 0
+            assert row['existing'] == 1
+
 if __name__=='__main__':
     unittest.main()
         
