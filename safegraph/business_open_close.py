@@ -59,7 +59,7 @@ class BusinessOpenClose:
                 i += 1
         #create a dataframe based on keys.
         #calculate opens and closes
-        all_businesses : pd.DataFrame = pd.DataFrame(columns=['placekey', 'poi_cbg', 'naics', 'opened_on', 'closed_on'], dtype='object')
+        all_businesses : pd.DataFrame = pd.DataFrame(columns=['placekey', 'poi_cbg', 'naics_code', 'opened_on', 'closed_on'], dtype='object')
         key_list = list(opened_on.keys())
         list_of_rows = []
         for _key in key_list:
