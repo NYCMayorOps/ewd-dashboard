@@ -32,6 +32,7 @@ class BusinessOpenClose:
         business_df.to_csv(ROOT / 'output' / 'safegraph' / 'businesses_open_close_raw.csv', index=False)
         answer = self.find_counts(business_df)
         answer.to_csv(ROOT / 'output' / 'safegraph' / 'open_closed_counts.csv', index=False)
+    
     def make_business_open_close_df(self):
         #for week in patterns
         print("business_count")
