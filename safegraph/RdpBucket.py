@@ -2,7 +2,7 @@ import os
 import boto3
 from dotenv import load_dotenv
 from pathlib import Path
-load_dotenv(Path('c:\\Users\\sscott1\\secrets\.env' ))
+load_dotenv(Path(f'c:\\Users\\{os.getlogin()}\\secrets\.env' ))
 
 class RdpBucket: 
     #a class for the rdp connection
@@ -36,6 +36,7 @@ class RdpBucket:
         Raises:
         """
         ROOT = os.getenv('MAYOR_DASHBOARD_ROOT')
+        assert ROOT is not None
         s3 = self.s3
         bucket_name='safegraph-post-rdp'
         prefix='output/neighborhood_patterns/nattern'
