@@ -93,7 +93,8 @@ class DistanceFromHome:
                                     'distance_from_home_pre_covid': [distance_from_home_pre_covid],
                                     'percent_change': [percent_change]
                                   })
-            answer_df = answer_df.append(new_df, ignore_index=True)
+            #answer_df = answer_df.append(new_df, ignore_index=True)
+            answer_df = pd.concat([answer_df, new_df], ignore_index=True)
         answer_df.to_csv(ROOT / 'output' / 'safegraph' / 'distance_from_home_all_dates.csv', index=False, sep=',')
         print("distance from home complete")
         return True

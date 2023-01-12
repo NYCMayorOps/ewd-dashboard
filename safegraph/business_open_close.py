@@ -44,7 +44,7 @@ class BusinessOpenClose:
         for file_str in os.listdir(ROOT / 'safegraph' / 'csvs' / 'core_poi_weekly_patterns'):
             if i < 99999:
                 #read month
-                print(file_str)
+                print(f"business open close: {file_str}")
                 file_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'core_poi_weekly_patterns' / file_str, sep='|', dtype='object')
                 #filter by geography as new month
                 filter_file = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'filter_files' / 'nyc_counties.csv', dtype={'poi_cbg': str} )

@@ -91,18 +91,29 @@ def mastercard_transform(df):
     return df_agg
 
 def mastercard_transform_old_dates(df, min_date, max_date):
+    '''
+    input:
+        df: the old mastercard dateframe from 2019-2020
+    side-effects:
+        this function writes to df_agg_old.csv
+    '''
     min_month = min_date.strftime('%m')
     min_day = min_date.strftime('%d')
     max_month = max_date.strftime('%m')
     max_day = max_date.strftime('%d')
-
-
-    if min_date.month > 2 :
+    print(f"dates before: {min_date}, {max_date}")
+    #this is pre-pandemic
+    if min_date.month == 12 and max_date.month == 1:
+        min_date = f'2019-{min_month}-{min_day}'
+        max_date = f'2020-{max_month}-{max_day}'
+    elif min_date.month > 2 :
         min_date = f'2019-{min_month}-{min_day}'
         max_date = f'2019-{max_month}-{max_day}'
     else:
         min_date = f'2020-{min_month}-{min_day}'
         max_date = f'2020-{max_month}-{max_day}'
+    print(f"min date after: {min_date}, max_date: {max_date}")
+    assert (min_date < max_date)
     df = df.loc[(df.txn_date >= min_date) & (df.txn_date <= max_date)]
     assert(len(df) > 0)
     df = df.copy()
