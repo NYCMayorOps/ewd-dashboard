@@ -56,6 +56,7 @@ def concat_all_files(root):
     files = sorted(files)
     file_paths = [root / 'mastercard' / 'historic' / file for file in files]
     print("reading csvs")
+    assert len(file_paths) > 1
     file_frames = [pd.read_csv(x) for x in file_paths]
     print("concatenating csvs into one large file")
     df = pd.concat(file_frames)

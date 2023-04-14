@@ -54,7 +54,8 @@ class StopsPerPop:
 
     def find_stops_per_pop(self, nattern_name: str, nattern_df: pd.DataFrame, filter_file):
             nattern_df = utils_.filter_nattern_to_region(nattern_df, filter_file)
-            total_stops_normalized = nattern_df['stops_normalized'].sum()
+            #the raw data is now normalized data.
+            total_stops_normalized = nattern_df['raw_stop_counts'].sum()
 
             #get the population
             year_month = utils_.get_date_from_nattern_name(nattern_name)

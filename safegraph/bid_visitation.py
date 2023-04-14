@@ -59,6 +59,9 @@ class BidVisitation:
         '''
         assert ptypes.is_string_dtype(bid_df['geoid'])
         assert ptypes.is_string_dtype(nattern['area'])
+        #print(f"nattern info{nattern.info()}")
+        nattern['stops_normalized'] = nattern['raw_stop_counts']
+        nattern['unique_visitors_normalized'] = nattern['raw_device_counts']
         nattern = nattern[['area', 'date_range_start', 'stops_normalized', 'unique_visitors_normalized']]
         answer: pd.DataFrame = pd.merge(nattern, bid_df, left_on='area', right_on='geoid', how='left')
         return answer
@@ -91,7 +94,7 @@ class BidVisitation:
         nattern_joined : pd.DataFrame = self.extract_bid_visit_dataframe(bid_df, nattern)
         bid_agg : pd.DataFrame = self.aggregate_by_bid(nattern_joined)
         #aggregate pre_pandemic months
-        old_nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / f'nattern_normalized_{pre_covid_date}.csv', sep='|', dtype={'area': str})
+        old_nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / f'nattern_advan_{pre_covid_date}.csv', sep='|', dtype={'area': str})
         nattern_joined = self.extract_bid_visit_dataframe(bid_df, old_nattern)
         old_agg : pd.DataFrame = self.aggregate_by_bid(nattern_joined) 
         old_and_new_agg = self.get_bid_change(old_agg, bid_agg)
