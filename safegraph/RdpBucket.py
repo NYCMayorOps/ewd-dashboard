@@ -39,7 +39,7 @@ class RdpBucket:
         assert ROOT is not None
         s3 = self.s3
         bucket_name='safegraph-post-rdp'
-        prefix='output/neighborhood_patterns/nattern'
+        prefix='output/neighborhood-natterns-plus'
         my_bucket = s3.Bucket(bucket_name)
         keys = []
         for object in my_bucket.objects.filter(Prefix=prefix):
@@ -50,9 +50,10 @@ class RdpBucket:
         #print(f"keys: {keys}")
         for key in keys:
             obj_name = key.split('/')[-1]
-            if obj_name not in old_historic:
-                print(f"downloading {obj_name}")
+            if obj_name not in old_historic and type(obj_name == str) and len(obj_name) > 1:
+                print(f"downloading file named: {obj_name}")
                 filename =  (sg_historic_path / obj_name).as_posix()
+                print(f"filename: {filename}")
                 my_bucket.download_file(f'{key}', f'{filename}')
         print("All natterns are up to date.")
 
@@ -60,7 +61,7 @@ class RdpBucket:
         ROOT = os.getenv('MAYOR_DASHBOARD_ROOT')
         s3 = self.s3
         bucket_name ='safegraph-post-rdp'
-        prefix = 'output/weekly_patterns/weekly_pattern'
+        prefix = 'output/poi-patterns-plus'
         my_bucket = s3.Bucket(bucket_name)
         keys = []
         for object in my_bucket.objects.filter(Prefix=prefix):

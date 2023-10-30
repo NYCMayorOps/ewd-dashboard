@@ -12,15 +12,15 @@ class Utils:
             '2020': 8772978,
             '2021': 8467513,
             '2022': 8467513,
-            '2023': 8467513,
+            '2023': 7888121,
         }
 
     def get_date_from_nattern_name(self, name: str) -> str:
         name = name.split('.')[0]
-        return name[-7:]
+        return name[-10:]
 
     def pre_covid_date(self, date: str) -> str:
-        this_datetime = datetime.strptime(date, "%Y-%m")
+        this_datetime = datetime.strptime(date, "%Y-%m-%d")
         if this_datetime.month == 1 or this_datetime.month == 2:   
             return f'2020-{str(this_datetime.month).zfill(2)}'
         else:
@@ -50,7 +50,7 @@ class Utils:
             else:
                 filter_.append(False)
         nattern_filtered = nattern[filter_]
-        nattern_filtered = nattern_filtered.reset_index()
+        nattern_filtered = nattern_filtered.reset_index(drop=True)
         #print(f"len nattern_filtered: {len(nattern_filtered)}")
         return nattern_filtered
     
@@ -77,7 +77,7 @@ class Utils:
             else:
                 filter_.append(False)
         poi_filtered = poi[filter_]
-        poi_filtered = poi_filtered.reset_index()
+        poi_filtered = poi_filtered.reset_index(drop=True)
         #print(f"len nattern_filtered: {len(nattern_filtered)}")
         return poi_filtered
 

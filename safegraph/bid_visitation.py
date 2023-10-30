@@ -17,6 +17,7 @@ load_dotenv(Path('c:\\\\Users\\sscott1\\secrets\\.env'))
 ROOT = Path(os.getenv('MAYOR_DASHBOARD_ROOT'))
 assert(ROOT) is not None
 utils_ = Utils()
+
 class BidVisitation:
     def __init__(self):
         pass
@@ -30,7 +31,7 @@ class BidVisitation:
         
         # instead of reading the shapefile, read the pre-extracted CSV
         bid_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', dtype={'geoid': 'string'})
-        cbd_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'CBD_CBGs.csv', dtype={'geoid': 'string'})
+        cbg_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'CBD_CBGs.csv', dtype={'geoid': 'string'})
         # for each month:
         list_of_months: List[pd.DataFrame] = []
         list_of_months_cbg: List[pd.DataFrame] = []
@@ -39,9 +40,10 @@ class BidVisitation:
                 continue
             old_and_new_agg = self.process_month(month, bid_df)
             list_of_months.append(old_and_new_agg)
-            old_and_new_agg = self.process_month(month, cbd_df)
+            old_and_new_agg = self.process_month(month, cbg_df)
             list_of_months_cbg.append(old_and_new_agg)
-        answer = pd.concat(list_of_months)
+            #list_of_months_cbg = pd.concat([list_of_months_cbg, old_and_new_agg], axis = 0)
+        answer = pd.concat(list_of_months, axis=0)
         answer.to_csv(ROOT / 'output' / 'safegraph' / 'bid_visitation_all_dates.csv', sep=',', index=False)
         answer = pd.concat(list_of_months_cbg)
         answer.to_csv(ROOT / 'output' / 'safegraph' / 'cbd_visitation_all_dates.csv', sep=',', index=False)
@@ -60,14 +62,14 @@ class BidVisitation:
         assert ptypes.is_string_dtype(bid_df['geoid'])
         assert ptypes.is_string_dtype(nattern['area'])
         #print(f"nattern info{nattern.info()}")
-        nattern['stops_normalized'] = nattern['raw_stop_counts']
-        nattern['unique_visitors_normalized'] = nattern['raw_device_counts']
+        nattern['stops_normalized'] = nattern['stop_counts']
+        nattern['unique_visitors_normalized'] = nattern['device_counts']
         nattern = nattern[['area', 'date_range_start', 'stops_normalized', 'unique_visitors_normalized']]
         answer: pd.DataFrame = pd.merge(nattern, bid_df, left_on='area', right_on='geoid', how='left')
         return answer
 
     def aggregate_by_bid(self, bid_joined_nattern: pd.DataFrame):
-        joined_df = bid_joined_nattern.groupby(by=['bid'], as_index=False).agg(stops=('stops_normalized', np.sum), unique_visitors=('unique_visitors_normalized', np.sum), date_range_start=('date_range_start', np.max))
+        joined_df = bid_joined_nattern.groupby(by=['bid'], as_index=False).agg(stops=('stops_normalized', 'sum'), unique_visitors=('unique_visitors_normalized', 'sum'), date_range_start=('date_range_start', 'max'))
         return joined_df.sort_values('bid')
 
     def get_bid_change(self, old_agg: pd.DataFrame, new_agg:pd.DataFrame):
@@ -90,13 +92,13 @@ class BidVisitation:
         print(this_date)
         pre_covid_date = utils_.pre_covid_date(this_date)
         #aggregate by bid for this month
-        nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / filename, sep='|', dtype={'area': str})
+        nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / filename, sep=',', dtype={'area': str})
         nattern_joined : pd.DataFrame = self.extract_bid_visit_dataframe(bid_df, nattern)
         bid_agg : pd.DataFrame = self.aggregate_by_bid(nattern_joined)
         #aggregate pre_pandemic months
-        old_nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / f'nattern_advan_{pre_covid_date}.csv', sep='|', dtype={'area': str})
+        old_nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / f'natterns_plus_msa_{pre_covid_date}-01.csv.zip', sep=',', dtype={'area': str})
         nattern_joined = self.extract_bid_visit_dataframe(bid_df, old_nattern)
-        old_agg : pd.DataFrame = self.aggregate_by_bid(nattern_joined) 
+        old_agg : pd.DataFrame = self.aggregate_by_bid(nattern_joined)
         old_and_new_agg = self.get_bid_change(old_agg, bid_agg)
         old_and_new_agg['year-month'] = this_date
         return old_and_new_agg

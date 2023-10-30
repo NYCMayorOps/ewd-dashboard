@@ -44,8 +44,9 @@ class DistanceFromHome:
             else:
                 filter_.append(False)
         nattern_filtered = nattern[filter_]
-        nattern_filtered = nattern_filtered.reset_index()
+        nattern_filtered = nattern_filtered.reset_index(drop=True)
         #print(f"len nattern_filtered: {len(nattern_filtered)}")
+        assert(len(nattern_filtered) > 0)
         return nattern_filtered
 
     def main(self):
@@ -66,14 +67,15 @@ class DistanceFromHome:
         answer_df = pd.DataFrame(columns=['date', 'distance_from_home', 'distance_from_home_pre_covid', 'distance_percent_change'])
         CSV_PATH = ROOT / 'safegraph' / 'csvs' 
         natterns = os.listdir(CSV_PATH / 'natterns')
+        assert(len(natterns) > 3)
         for filename in natterns:
             # Open safegraph
-            if 'nattern_normalized' not in filename:
+            if 'natterns_plus' not in filename:
                 continue
             this_date = self.get_date_from_nattern_name(filename)
             print(f"distance from home {this_date}")
             #find distance from home for this month
-            this_nattern = pd.read_csv(CSV_PATH / 'natterns' /  filename, dtype={}, sep='|')
+            this_nattern = pd.read_csv(CSV_PATH / 'natterns' /  filename, dtype={}, sep=',')
             filter_file = pd.read_csv( CSV_PATH / 'filter_files' / 'nyc_counties.csv', dtype={'poi_cbg': str}, sep=',' )
             this_nattern = self.filter_nattern_to_region(this_nattern, filter_file)
             distance_from_home = this_nattern['distance_from_home'].mean()
@@ -81,7 +83,7 @@ class DistanceFromHome:
             # find distance from home pre-pandemic
             
             old_date = self.pre_covid_date(this_date)
-            pp_nattern = pd.read_csv(CSV_PATH / 'natterns' / f'nattern_normalized_{old_date}.csv', sep='|' )
+            pp_nattern = pd.read_csv(CSV_PATH / 'natterns' / f'natterns_plus_msa_{old_date}.csv.zip', sep=',' )
             pp_nattern = self.filter_nattern_to_region(pp_nattern, filter_file)
             distance_from_home_pre_covid = pp_nattern['distance_from_home'].mean()
 
@@ -95,6 +97,7 @@ class DistanceFromHome:
                                   })
             #answer_df = answer_df.append(new_df, ignore_index=True)
             answer_df = pd.concat([answer_df, new_df], ignore_index=True)
+        assert(len(answer_df) > 3)
         answer_df.to_csv(ROOT / 'output' / 'safegraph' / 'distance_from_home_all_dates.csv', index=False, sep=',')
         print("distance from home complete")
         return True
@@ -108,11 +111,15 @@ class DistanceFromHome:
 
     def get_date_from_nattern_name(self, name: str) -> str:
         name = name.split('.')[0]
-        return name[-7:]
+        return name[-10:]
 
     def pre_covid_date(self, date: str) -> str:
-        this_datetime = datetime.strptime(date, "%Y-%m")
+        this_datetime = datetime.strptime(date, "%Y-%m-%d")
         if this_datetime.month == 1 or this_datetime.month == 2:   
-            return f'2020-{str(this_datetime.month).zfill(2)}'
+            return f'2020-{str(this_datetime.month).zfill(2)}-01'
         else:
-            return f'2019-{str(this_datetime.month).zfill(2)}'
+            return f'2019-{str(this_datetime.month).zfill(2)}-01'
+        
+if __name__ == '__main__':
+    dfh = DistanceFromHome()
+    dfh.main()

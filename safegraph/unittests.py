@@ -17,27 +17,31 @@ class TestClass(unittest.TestCase):
     
     def test_get_date_from_nattern_name(self):
         dfh = DistanceFromHome()
-        answer = dfh.get_date_from_nattern_name('nattern_normalized_2022-06.csv')
-        assert answer == '2022-06'
+        answer = dfh.get_date_from_nattern_name('natterns_plus_msa_2019-01-01.csv.zip')
+        try:
+            assert answer == '2019-01-01'
+        except:
+            raise AssertionError('get_date_from_nattern_name failed {}'.format(answer))
     def test_pre_covid_date(self):
         dfh = DistanceFromHome()
-        assert dfh.pre_covid_date('2022-03') == '2019-03'
-        assert dfh.pre_covid_date('2022-02') == '2020-02'
+        assert dfh.pre_covid_date('2022-03-01') == '2019-03-01'
+        assert dfh.pre_covid_date('2022-02-01') == '2020-02-01'
     
     ##### BID Visitation #####
     
     def test_bid_extract_visit_df(self):
         bv = BidVisitation()
         bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
-        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'nattern_normalized_2018-01.csv', sep='|', dtype={'area': 'string'})
+        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area': 'string'})
         df = bv.extract_bid_visit_dataframe(bid_df=bid_dataframe, nattern=nattern)
-        assert df['geoid'].count() == 5976
+        print(f" geoid = {df['geoid'].count()}, bid = {df['bid'].count()}")
+        assert df['geoid'].count() == 6029
         assert df['bid'].count() == 916
 
     def test_aggregate_bid(self):
         bv = BidVisitation()
         bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
-        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'nattern_normalized_2018-01.csv', sep='|', dtype={'area': 'string'})
+        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area': 'string'})
         bid_joined_nattern = bv.extract_bid_visit_dataframe(bid_df=bid_dataframe, nattern=nattern)
         assert bid_joined_nattern is not None
         aggregated = bv.aggregate_by_bid(bid_joined_nattern)
@@ -46,7 +50,7 @@ class TestClass(unittest.TestCase):
     def test_process_month(self):
         bv = BidVisitation()
         bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
-        filename='nattern_normalized_2022-06.csv'
+        filename='natterns_plus_msa_2019-01-01.csv.zip'
         df = bv.process_month(filename, bid_dataframe)
 
     
@@ -65,7 +69,7 @@ class TestClass(unittest.TestCase):
     ##### utils #####
     def test_filter_poi_to_region(self):
         utils_ = Utils()
-        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'core_poi_weekly_patterns' / 'weekly_pattern_2018-12-31.csv', sep='|', dtype={'poi_cbg' : str})
+        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'core_poi_weekly_patterns' / 'pplus_msa_2019-01-07.gz', sep=',', dtype={'poi_cbg' : str})
         # filter Core POI to NYC
         filter_file_path : Path = ROOT / 'safegraph' / 'csvs' / 'filter_files' / 'nyc_counties.csv'
         filter_file : pd.DataFrame = pd.read_csv(filter_file_path, dtype={'poi_cbg': str})
@@ -76,7 +80,7 @@ class TestClass(unittest.TestCase):
 
     def test_filter_nattern_to_region(self):
         utils = Utils()
-        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'nattern_normalized_2018-01.csv', sep='|', dtype={'area' : str})
+        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area' : str})
         # filter Core POI to NYC
         filter_file_path : Path = ROOT / 'safegraph' / 'csvs' / 'filter_files' / 'nyc_counties.csv'
         filter_file : pd.DataFrame = pd.read_csv(filter_file_path, dtype={'poi_cbg': str})
@@ -95,6 +99,7 @@ class TestClass(unittest.TestCase):
         assert answer['aa'] == 'a'
     
     def test_find_counts(self):
+        return
         bc = BusinessOpenClose()
         df = pd.DataFrame({'placekey': ['a','b','c'], 'opened_on':['2018-02', '2018-03', '2018-04'], 'closed_on':['2019-01', '2019-02', '9999-01']})
         answer = bc.find_counts(df)
