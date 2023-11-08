@@ -30,17 +30,21 @@ class BidVisitation:
         rdp_bucket.download_natterns()
         
         # instead of reading the shapefile, read the pre-extracted CSV
-        bid_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', dtype={'geoid': 'string'})
-        cbg_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'CBD_CBGs.csv', dtype={'geoid': 'string'})
+        #business improvement districts
+        bid_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', dtype={'geoid': 'string', 'bidid': 'int'})
+        #central business districts. bidid is not numeric. 
+        #also technically not a bid but that is what the column is called because they both go through the process_month method.
+        cbd_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'CBD_CBGs.csv', dtype={'geoid': 'string', 'bidid': 'string'})
         # for each month:
         list_of_months: List[pd.DataFrame] = []
         list_of_months_cbg: List[pd.DataFrame] = []
         for month in os.listdir(ROOT / 'safegraph' / 'csvs' / 'natterns'):
+            print(month)
             if len(month) < 25:
                 continue
             old_and_new_agg = self.process_month(month, bid_df)
             list_of_months.append(old_and_new_agg)
-            old_and_new_agg = self.process_month(month, cbg_df)
+            old_and_new_agg = self.process_month(month, cbd_df)
             list_of_months_cbg.append(old_and_new_agg)
             #list_of_months_cbg = pd.concat([list_of_months_cbg, old_and_new_agg], axis = 0)
         answer = pd.concat(list_of_months, axis=0)
@@ -69,7 +73,9 @@ class BidVisitation:
         return answer
 
     def aggregate_by_bid(self, bid_joined_nattern: pd.DataFrame):
-        joined_df = bid_joined_nattern.groupby(by=['bid'], as_index=False).agg(stops=('stops_normalized', 'sum'), unique_visitors=('unique_visitors_normalized', 'sum'), date_range_start=('date_range_start', 'max'))
+        joined_df = bid_joined_nattern.groupby(by=['bid', 'bidid']).agg(stops=('stops_normalized', 'sum'), 
+                                                                        unique_visitors=('unique_visitors_normalized', 'sum'), 
+                                                                        date_range_start=('date_range_start', 'max')).reset_index()
         return joined_df.sort_values('bid')
 
     def get_bid_change(self, old_agg: pd.DataFrame, new_agg:pd.DataFrame):
@@ -89,7 +95,7 @@ class BidVisitation:
 
     def process_month(self, filename: str, bid_df: pd.DataFrame):
         this_date = utils_.get_date_from_nattern_name(filename)
-        print(this_date)
+        print(f"bid visitation: {this_date}")
         pre_covid_date = utils_.pre_covid_date(this_date)
         #aggregate by bid for this month
         nattern : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / filename, sep=',', dtype={'area': str})
