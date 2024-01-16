@@ -38,8 +38,8 @@ class TestClass(unittest.TestCase):
     
     def test_bid_extract_visit_df(self):
         bv = BidVisitation()
-        bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
-        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area': 'string'})
+        bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': str})
+        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area': str})
         df = bv.extract_bid_visit_dataframe(bid_df=bid_dataframe, nattern=nattern)
         print(f" geoid = {df['geoid'].count()}, bid = {df['bid'].count()}")
         assert df['geoid'].count() == 6029
@@ -47,8 +47,8 @@ class TestClass(unittest.TestCase):
 
     def test_aggregate_bid(self):
         bv = BidVisitation()
-        bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
-        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area': 'string'})
+        bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': str})
+        nattern = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2019-01-01.csv.zip', sep=',', dtype={'area': str})
         bid_joined_nattern = bv.extract_bid_visit_dataframe(bid_df=bid_dataframe, nattern=nattern)
         assert bid_joined_nattern is not None
         aggregated = bv.aggregate_by_bid(bid_joined_nattern)
@@ -56,7 +56,7 @@ class TestClass(unittest.TestCase):
 
     def test_process_month(self):
         bv = BidVisitation()
-        bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
+        bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': str} )
         filename='natterns_plus_msa_2023-11-01.csv.zip'
         df = bv.process_month(filename, bid_dataframe)
 
@@ -158,6 +158,13 @@ class TestClass(unittest.TestCase):
             assert row['closed'] == 0
             assert row['existing'] == 1
 
+    def test_get_date_from_nattern_name_2023(self):
+            dfh = DistanceFromHome()
+            answer = dfh.get_date_from_nattern_name('natterns_plus_msa_2023-11-01.csv.zip')
+            try:
+                assert answer == '2023-11-01'
+            except:
+                raise AssertionError('get_date_from_nattern_name failed {}'.format(answer))
 if __name__=='__main__':
     unittest.main()
         

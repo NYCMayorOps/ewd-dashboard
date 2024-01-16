@@ -31,10 +31,10 @@ class BidVisitation:
         
         # instead of reading the shapefile, read the pre-extracted CSV
         #business improvement districts
-        bid_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', dtype={'geoid': 'string', 'bidid': 'int'})
+        bid_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', dtype={'geoid': str, 'bidid': str})
         #central business districts. bidid is not numeric. 
         #also technically not a bid but that is what the column is called because they both go through the process_month method.
-        cbd_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'CBD_CBGs.csv', dtype={'geoid': 'string', 'bidid': 'string'})
+        cbd_df = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'CBD_CBGs.csv', dtype={'geoid': str, 'bidid': str})
         # for each month:
         list_of_months: List[pd.DataFrame] = []
         list_of_months_cbg: List[pd.DataFrame] = []
@@ -64,10 +64,9 @@ class BidVisitation:
         Returns: a geodataframe with the bid identifer and the sum of the normalized visits.
         '''
         try:
-            assert ptypes.is_string_dtype(bid_df['geoid'])
-            assert ptypes.is_string_dtype(nattern['area'])
-        except assertionError:
-            raise AssertionError(f"bid_df geoid is a {type(bid_df['geoid'])} and nattern area is a {type(nattern['area'])}. they need to be strings")
+            assert bid_df['geoid'].dtype == nattern['area'].dtype
+        except AssertionError:
+            raise AssertionError(f"bid_df geoid is a {bid_df['geoid'].dtype} and nattern area is a {nattern['area'].dtype}. They need to be the same")
         #print(f"nattern info{nattern.info()}")
         nattern['stops_normalized'] = nattern['stop_counts']
         nattern['unique_visitors_normalized'] = nattern['device_counts']
