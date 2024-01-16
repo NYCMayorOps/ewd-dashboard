@@ -27,6 +27,13 @@ class TestClass(unittest.TestCase):
         assert dfh.pre_covid_date('2022-03-01') == '2019-03-01'
         assert dfh.pre_covid_date('2022-02-01') == '2020-02-01'
     
+    def test_get_date_from_nattern_name_2023(self):
+        dfh = DistanceFromHome()
+        answer = dfh.get_date_from_nattern_name('natterns_plus_msa_2023-11-01.csv.zip')
+        try:
+            assert answer == '2023-11-01'
+        except:
+            raise AssertionError('get_date_from_nattern_name failed {}'.format(answer))
     ##### BID Visitation #####
     
     def test_bid_extract_visit_df(self):
@@ -50,7 +57,7 @@ class TestClass(unittest.TestCase):
     def test_process_month(self):
         bv = BidVisitation()
         bid_dataframe = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'bid_visitation' / 'bids_cbg_one_to_many.csv', sep=',', dtype={'geoid': 'string'})
-        filename='natterns_plus_msa_2019-01-01.csv.zip'
+        filename='natterns_plus_msa_2023-11-01.csv.zip'
         df = bv.process_month(filename, bid_dataframe)
 
     

@@ -63,8 +63,11 @@ class BidVisitation:
 
         Returns: a geodataframe with the bid identifer and the sum of the normalized visits.
         '''
-        assert ptypes.is_string_dtype(bid_df['geoid'])
-        assert ptypes.is_string_dtype(nattern['area'])
+        try:
+            assert ptypes.is_string_dtype(bid_df['geoid'])
+            assert ptypes.is_string_dtype(nattern['area'])
+        except assertionError:
+            raise AssertionError(f"bid_df geoid is a {type(bid_df['geoid'])} and nattern area is a {type(nattern['area'])}. they need to be strings")
         #print(f"nattern info{nattern.info()}")
         nattern['stops_normalized'] = nattern['stop_counts']
         nattern['unique_visitors_normalized'] = nattern['device_counts']
