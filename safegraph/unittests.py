@@ -104,9 +104,9 @@ class TestClass(unittest.TestCase):
         assert isinstance(answer, dict)
         assert len(answer) == 3
         assert answer['aa'] == 'a'
-    
+    '''
+    #deprecated
     def test_find_counts(self):
-        return
         bc = BusinessOpenClose()
         df = pd.DataFrame({'placekey': ['a','b','c'], 'opened_on':['2018-02', '2018-03', '2018-04'], 'closed_on':['2019-01', '2019-02', '9999-01']})
         answer = bc.find_counts(df)
@@ -157,6 +157,7 @@ class TestClass(unittest.TestCase):
             assert row['opened'] == 0
             assert row['closed'] == 0
             assert row['existing'] == 1
+    '''
 
     def test_get_date_from_nattern_name_2023(self):
             dfh = DistanceFromHome()
@@ -165,6 +166,19 @@ class TestClass(unittest.TestCase):
                 assert answer == '2023-11-01'
             except:
                 raise AssertionError('get_date_from_nattern_name failed {}'.format(answer))
+            
+    def test_filter_nattern_to_region_2023_11(self):
+        '''
+        this month was failing
+        '''
+        utils = Utils()
+        latest_df : pd.DataFrame = pd.read_csv(ROOT / 'safegraph' / 'csvs' / 'natterns' / 'natterns_plus_msa_2023-11-01.csv.zip', sep=',', dtype={'area' : str})
+        # filter Core POI to NYC
+        filter_file_path : Path = ROOT / 'safegraph' / 'csvs' / 'filter_files' / 'nyc_counties.csv'
+        filter_file : pd.DataFrame = pd.read_csv(filter_file_path, dtype={'poi_cbg': str})
+        answer = utils.filter_nattern_to_region(latest_df, filter_file)
+        assert len(answer) > 1
+        assert len(set(answer['county'])) == 5
 if __name__=='__main__':
     unittest.main()
         

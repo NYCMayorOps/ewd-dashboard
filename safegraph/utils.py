@@ -30,7 +30,7 @@ class Utils:
         '''
         filters nattern to the geography specified in filter file.
         params:
-            - nattern (dataframe) - a raw nattern file from SafeGraph
+            - nattern (dataframe) - a raw nattern file from Advan
             - filter_file - a list of counties to include. May be MSA or city.
 
         returns:
@@ -39,6 +39,8 @@ class Utils:
         fips = filter_file
         #filters the HPS to the region
         nattern['county'] = nattern['area'].astype(str).apply(lambda x: x[:5])
+        print(nattern['county'])
+        print(nattern.info())
         #make a vector of in or out
         filter_ : List[bool] = []
         assert (type(nattern['county'][0]) == type(fips['poi_cbg'][0]))

@@ -77,9 +77,9 @@ def mastercard_transform(df):
     df = df.loc[df['industry'] == 'Total Retail']
     df = df.loc[df['geo_type'] == 'Msa']
 
-    df_agg = df.groupby(['zip_code', 'date_range']).agg(txn_amt_index=('txn_amt_index', np.mean),
+    df_agg = df.groupby(['zip_code', 'date_range']).agg(txn_amt_index=('txn_amt_index', "mean"),
                                           txn_cnt_index=('txn_cnt_index', np.mean),
-                                          avg_spend_amt_index=('avg_spend_amt_index', np.mean),
+                                          avg_spend_amt_index=('avg_spend_amt_index', "mean"),
                                           #yoy_txn_amt=('yoy_txn_amt', np.mean),
                                           #yoy_txn_cnt=('yoy_txn_cnt', np.mean)    
                                         )
@@ -124,9 +124,9 @@ def mastercard_transform_old_dates(df, min_date, max_date):
     df = df.loc[df['geo_type'] == 'Msa']
     #df.to_csv('check_old_dates.csv')
 
-    df_agg = df.groupby(['zip_code', 'date_range']).agg(txn_amt_index=('txn_amt_index', np.mean),
-                                          txn_cnt_index=('txn_cnt_index', np.mean),
-                                          avg_spend_amt_index=('avg_spend_amt_index', np.mean),
+    df_agg = df.groupby(['zip_code', 'date_range']).agg(txn_amt_index=('txn_amt_index', "mean"),
+                                          txn_cnt_index=('txn_cnt_index', "mean"),
+                                          avg_spend_amt_index=('avg_spend_amt_index', "mean"),
                                           #these are coming in as strings.
                                           #yoy_txn_amt=('yoy_txn_amt', np.mean),
                                           #yoy_txn_cnt=('yoy_txn_cnt', np.mean)    
