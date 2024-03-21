@@ -7,13 +7,14 @@ class Utils:
     
     def __init__(self):
         self.population_dict = {
-            '2018': 8398748, 
-            '2019': 8336817,
-            '2020': 8772978,
-            '2021': 8467513,
-            '2022': 8467513,
-            '2023': 7888121,
-        }
+            '2018': 8_398_748, 
+            '2019': 8_336_817,
+            '2020': 8_772_978,
+            '2021': 8_467_513,
+            '2022': 8_467_513,
+            '2023': 8_348_000,   #8_260_000 + 78_000 https://www.nytimes.com/2024/03/14/nyregion/nyc-population-decline.html
+            '2024': 8_260_000
+            }
 
     def get_date_from_nattern_name(self, name: str) -> str:
         name = name.split('.')[0]
